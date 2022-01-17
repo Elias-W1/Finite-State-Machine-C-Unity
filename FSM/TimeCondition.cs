@@ -13,14 +13,15 @@ public class TimeCondition
 
     public bool IsFullfilled()
     {
-
+        // Reset condition
         if (fullfilled)
         {
             start = DateTime.Now;
             fullfilled = false;
             return false;
         }
-
+        
+        // Fullfilled?
         if ((DateTime.Now - start).TotalSeconds >= timelimit)
         {
             fullfilled = true;

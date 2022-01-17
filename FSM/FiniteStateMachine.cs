@@ -8,15 +8,15 @@ public class FiniteStateMachine
     protected FsmState currentState;
     
     protected  FsmTransition triggeredTrans;
-    protected List<Action> actions = new List<Action>();
-    
-    
-    private bool firstTick = true;
-    
-    public FiniteStateMachine(FsmState inital)
+    protected Queue<Action> actions = new Queue<Action>();
+
+    public FiniteStateMachine(FsmState initial)
     {
-        initialState = inital;
+        initialState = initial;
         currentState = initialState;
+        
+        // Entry action of initial state
+        AddAction(initial.entryAction);
     }
 
     public void AddState(FsmState s)
@@ -29,18 +29,11 @@ public class FiniteStateMachine
         for (int i = 0; i < stateArray.Length; i++) AddState(stateArray[i]);
     }
     
-    public List<Action> Tick()
+    
+    public Queue<Action> Tick()
     {
         triggeredTrans = null;
-        actions = new List<Action>();
 
-        // Execute entry action of initial state.
-        if (firstTick)
-        {
-            if(initialState.entryAction != null) actions.Add(initialState.entryAction);
-            firstTick = false;
-        }
-        
         // Find first triggered transition
         foreach (FsmTransition transition in  currentState.transitions)
         {
@@ -75,17 +68,20 @@ public class FiniteStateMachine
     {
         if (a != null)
         {
-            actions.Add(a);
+            actions.Enqueue(a);
         }
     }
     
-    public void ExecuteActions(List<Action> actions)
+    public void ExecuteActions(Queue<Action> actions)
     {
         if (actions == null) return;
-
-        foreach (Action a in actions)
+        
+        Action a;
+        while (actions.Count > 0)
         {
+            a = actions.Dequeue();
             a();
         }
     }
+    
 }
